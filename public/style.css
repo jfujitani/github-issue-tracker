@@ -1,0 +1,27 @@
+/* src/assets/style.css */
+#widget-container {
+  font-family: inherit;  /* Make sure font is inherited from the parent */
+  background-color: inherit; /* Match the background color */
+  color: inherit;  /* Match text color */
+}
+
+input[type="text"], button {
+  padding: 8px 12px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #f3f3f3;
+}
+
+h1 {
+  font-size: 1.5rem;
+  color: inherit;  /* Match heading color */
+}
+
