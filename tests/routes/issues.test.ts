@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import request from 'supertest';
 import { app } from '../../src/server.js';
-import { Console } from 'node:console';
+import * as memory from '../../src/storage/memory.js';
 
 describe('Issue API', () => {
   let createdId: string;
@@ -10,10 +10,13 @@ describe('Issue API', () => {
   const owner = "octocat";
   const repo = "Hello-World";
 
+  vi.stubGlobal('fetch', vi.fn());
 
   beforeEach(() => {
     // Clear in-memory data before each test if needed
     // (e.g. by resetting the in-memory store if it's exposed)
+    vi.clearAllMocks();    // Mock getIssue method from memory module
+
   });
 
   it('GET /api/issues should return an empty array initially', async () => {
@@ -63,4 +66,47 @@ describe('Issue API', () => {
     const res = await request(app).get(`/api/issues/${createdId}`);
     expect(res.status).toBe(404);
   });
+
+  it('should return issue status when GitHub API is successful', async () => {
+    // Arrange
+    vi.spyOn(memory, 'getIssue').mockImplementation((id: string) => {
+      // Return a mocked issue based on the id
+      if (id === '123') {
+        return {
+          id: Number(id),
+          url: "test",
+          owner: 'owner',
+          repo: 'repo',
+          number: 1
+        };
+      }
+      return null; // Return null for other ids
+    });
+    const issueId = '123';
+    const mockApiResponse = {
+      title: 'Test Issue',
+      state: 'open',
+      comments: 5,
+      html_url: 'https://github.com/owner/repo/issues/1',
+    };
+
+    // Mock fetch response
+    (fetch as Mock).mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue(mockApiResponse),
+    });
+
+    // Act
+    const response = await request(app).get(`/api/issues/${issueId}/status`);
+
+    // Assert
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      title: mockApiResponse.title,
+      state: mockApiResponse.state,
+      comments: mockApiResponse.comments,
+      url: mockApiResponse.html_url
+    });
+  });
+
 });
