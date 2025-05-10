@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "type": "node",
+            "name": "Debug server.ts",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/server.ts",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "outFiles": [ "${workspaceFolder}/dist/**/*.js" ],
+        },
+        {
+            "type": "node",
+            "name": "Debug current file",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/${relativeFile}",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "outFiles": [ "${workspaceFolder}/dist/**/*.js" ],
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Current Test File",
+            "autoAttachChildProcesses": true,
+            "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+            "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+            "args": ["run", "${relativeFile}"],
+            "smartStep": true,
+            "console": "integratedTerminal"
+          }
+    ]
+}
