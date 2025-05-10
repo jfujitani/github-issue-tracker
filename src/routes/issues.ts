@@ -1,28 +1,41 @@
 import { Router, json } from 'express';
-import { addIssue, getAllIssues, deleteIssue, getIssue } from '../storage/memory.js';
+import { addIssue, getAllIssues, deleteIssue, getIssue, updateTitle } from '../storage/memory.js';
 const router = Router();
 
-function parseGitHubIssueURL(url: string) {
-  const match = url.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/issues\/(\d+)/);
-  if (!match) return null;
-  return { owner: match[1], repo: match[2], number: match[3] };
-}
 
-router.get('/', (req, res) => {
+router.get('/', (_, res) => {
   res.json(getAllIssues());
+});
+
+router.get('/:id', (req, res) => {
+  const issue = getIssue(req.params.id);
+  if (!issue)
+    res.status(404).json({ error: "Issue not found" });
+
+  res.status(200).json(issue);
 });
 
 router.post('/', json(), (req, res) => {
   const { url } = req.body;
   if (!url) res.status(400).json({ error: 'Missing issue URL' });
 
-  const parsed = parseGitHubIssueURL(url);
-  if (!parsed) res.status(400).json({ error: 'Invalid GitHub issue URL' });
-
   const issue = addIssue(url);
+  if (!url) res.status(400).json({ error: 'Invalid GitHub issue URL' });
+
   res.status(201).json(issue);
 });
 
+router.put('/:id', json(), (req, res) => {
+  const { title } = req.body;
+  if (!title) res.status(400).json({ error: "Missing issute Title" });
+
+  if (updateTitle(req.params.id, title)) {
+    const issue = getIssue(req.params.id);
+    res.status(200).json(issue);
+  }
+  res.status(404).json({ error: "Issue not found" });
+
+})
 router.delete('/:id', (req, res) => {
   const success = deleteIssue(req.params.id);
   if (!success) res.status(404).json({ error: 'Not found' });
@@ -33,11 +46,8 @@ router.get('/:id/status', async (req, res) => {
   const issue = getIssue(req.params.id);
   if (!issue) res.status(404).json({ error: 'Issue not found' });
 
-  const parsed = parseGitHubIssueURL(issue.url);
-  if (!parsed) res.status(400).json({ error: 'Invalid stored URL' });
-
-  if (parsed !== null) {
-    const apiUrl = `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/issues/${parsed.number}`;
+  if (issue !== null) {
+    const apiUrl = `https://api.github.com/repos/${issue.owner}/${issue.repo}/issues/${issue.number}`;
     try {
       const response = await fetch(apiUrl, {
         headers: { 'User-Agent': 'Github-Issue-Tracker' }
