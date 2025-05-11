@@ -1,5 +1,5 @@
 import { TrackedIssue } from "../models/issue.js";
-const issues = new Map<number, TrackedIssue>();
+const issues = new Map<string, TrackedIssue>();
 
 let nextId = 1;
 
@@ -10,12 +10,12 @@ export function addIssue(url: string): TrackedIssue | null {
     return null;
   }
 
-  issues.set(parsed.id, parsed);
-  return issues.get(parsed.id) ?? null;
+  issues.set(parsed.id.toString(), parsed);
+  return issues.get(parsed.id.toString()) ?? null;
 }
 
 export function updateTitle(id: string, newTitle: string): boolean {
-  const issue = issues.get(Number(id));
+  const issue = issues.get(id);
   if (!issue) return false;
 
   issue.title = newTitle;
@@ -27,11 +27,11 @@ export function getAllIssues() {
 }
 
 export function deleteIssue(id: string) {
-  return issues.delete(Number(id));
+  return issues.delete(id);
 }
 
 export function getIssue(id: string): TrackedIssue | null {
-  return issues.get(Number(id)) ?? null;
+  return issues.get(id) ?? null;
 }
 
 function parseGitHubIssueURL(url: string): TrackedIssue | null {
@@ -39,7 +39,7 @@ function parseGitHubIssueURL(url: string): TrackedIssue | null {
   const match = url.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/issues\/(\d+)/);
   if (!match) return null;
   return {
-    id: id,
+    id: id.toString(),
     repo: match[2],
     number: parseInt(match[3]),
     url: url,

@@ -1,5 +1,5 @@
 export interface TrackedIssue {
-  id: number;
+  id: string;
   url: string;
   owner: string;
   repo: string;
