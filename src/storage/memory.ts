@@ -1,4 +1,4 @@
-import { TrackedIssue } from "../models/issue.js";
+import { TrackedIssue } from "../models/issueModel.js";
 const issues = new Map<string, TrackedIssue>();
 
 let nextId = 1;
