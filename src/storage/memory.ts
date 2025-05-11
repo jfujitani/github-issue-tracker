@@ -1,17 +1,17 @@
-import { TrackedIssue } from "../models/issueModel.js";
-const issues = new Map<string, TrackedIssue>();
+import { IssueModel } from "../models/issueModel.js";
+const issues = new Map<string, IssueModel>();
 
 let nextId = 1;
 
-export function addIssue(url: string): TrackedIssue | null {
+export function addIssue(url: string): IssueModel | undefined {
   const parsed = parseGitHubIssueURL(url);
 
-  if (parsed === null) {
-    return null;
+  if (parsed === undefined) {
+    return undefined;
   }
 
   issues.set(parsed.id.toString(), parsed);
-  return issues.get(parsed.id.toString()) ?? null;
+  return issues.get(parsed.id) ?? undefined;
 }
 
 export function updateTitle(id: string, newTitle: string): boolean {
@@ -30,14 +30,14 @@ export function deleteIssue(id: string) {
   return issues.delete(id);
 }
 
-export function getIssue(id: string): TrackedIssue | null {
-  return issues.get(id) ?? null;
+export function getIssue(id: string): IssueModel | undefined {
+  return issues.get(id) ?? undefined;
 }
 
-function parseGitHubIssueURL(url: string): TrackedIssue | null {
+function parseGitHubIssueURL(url: string): IssueModel | undefined {
   const id = nextId++;
   const match = url.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/issues\/(\d+)/);
-  if (!match) return null;
+  if (!match) return undefined;
   return {
     id: id.toString(),
     repo: match[2],

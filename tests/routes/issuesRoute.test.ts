@@ -80,7 +80,7 @@ describe('Issue API', () => {
           number: 1
         };
       }
-      return null; // Return null for other ids
+      return undefined;
     });
     const issueId = '123';
     const mockApiResponse = {

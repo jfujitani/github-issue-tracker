@@ -1,4 +1,4 @@
-export interface TrackedIssue {
+export interface IssueModel {
   id: string;
   url: string;
   owner: string;
