@@ -73,7 +73,7 @@ describe('Issue API', () => {
       // Return a mocked issue based on the id
       if (id === '123') {
         return {
-          id: Number(id),
+          id: id,
           url: "test",
           owner: 'owner',
           repo: 'repo',
