@@ -2,6 +2,28 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug server.ts (npm run debug) Nvim",
+      "type": "pwa-node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "run",
+        "debug"
+      ]
+    },
+    {
+      "name": "Debug test (npm run test) Nvim",
+      "type": "pwa-node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "run",
+        "test"
+      ]
+    },
+    {
       "type": "node",
       "name": "Debug server.ts",
       "request": "launch",
@@ -12,31 +34,21 @@
       ]
     },
     {
-      "type": "node",
-      "name": "Debug current file",
-      "request": "launch",
-      "program": "${workspaceFolder}/${relativeFile}",
-      "preLaunchTask": "tsc: build - tsconfig.json",
-      "outFiles": [
-        "${workspaceFolder}/dist/**/*.js"
-      ]
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "Debug Current Test File",
-      "autoAttachChildProcesses": true,
-      "skipFiles": [
-        "<node_internals>/**",
-        "**/node_modules/**"
-      ],
+      "type": "node",
+      "request": "launch",
       "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
       "args": [
         "run",
         "${relativeFile}"
       ],
+      "autoAttachChildProcesses": true,
       "smartStep": true,
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**"
+      ]
     }
   ]
 }

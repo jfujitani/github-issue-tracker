@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "node --loader ts-node/esm src/server.ts",
+    "debug": "node --loader ts-node/esm --inspect src/server.ts",
     "test": "vitest run"
   },
   "author": "jfujitani",
