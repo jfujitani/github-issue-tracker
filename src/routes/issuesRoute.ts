@@ -36,7 +36,7 @@ router.post('/', json(), (req, res) => {
   return;
 });
 
-router.put('/:id', json(), (req, res) => {
+router.patch('/:id/title', json(), (req, res) => {
   const { title } = req.body;
   if (!title) {
     res.status(400).json({ error: "Missing issute Title" });

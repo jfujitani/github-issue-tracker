@@ -50,9 +50,9 @@ describe('Issue API', () => {
     expect(res.body.number).toBe(number);
   });
 
-  it('PUT /api/issues/:id should update an issue', async () => {
+  it('PATCH /api/issues/:id should update an issue', async () => {
     const update = { title: 'Updated Title' };
-    const res = await request(app).put(`/api/issues/${createdId}`).send(update);
+    const res = await request(app).patch(`/api/issues/${createdId}/title`).send(update);
     expect(res.status).toBe(200);
     expect(res.body.title).toBe(update.title);
   });
