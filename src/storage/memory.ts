@@ -1,9 +1,9 @@
-import { IssueModel } from "../models/issueModel.js";
-const issues = new Map<string, IssueModel>();
+import { Issue } from "../models/issue.js";
+const issues = new Map<string, Issue>();
 
 let nextId = 1;
 
-export function addIssue(url: string): IssueModel | undefined {
+export function addIssue(url: string): Issue | undefined {
   const parsed = parseGitHubIssueURL(url);
 
   if (parsed === undefined) {
@@ -30,11 +30,11 @@ export function deleteIssue(id: string) {
   return issues.delete(id);
 }
 
-export function getIssue(id: string): IssueModel | undefined {
+export function getIssue(id: string): Issue | undefined {
   return issues.get(id) ?? undefined;
 }
 
-function parseGitHubIssueURL(url: string): IssueModel | undefined {
+function parseGitHubIssueURL(url: string): Issue | undefined {
   const id = nextId++;
   const match = url.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/issues\/(\d+)/);
   if (!match) return undefined;

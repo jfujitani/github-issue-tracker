@@ -1,4 +1,4 @@
-export interface IssueModel {
+export interface Issue {
   id: string;
   url: string;
   owner: string;
@@ -7,4 +7,3 @@ export interface IssueModel {
   title?: string;
   state?: string;
 }
-

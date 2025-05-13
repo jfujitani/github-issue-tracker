@@ -1,15 +1,21 @@
-import { Router, json } from 'express';
+import { Router, Request, Response, json } from 'express';
 import { addIssue, getAllIssues, deleteIssue, getIssue, updateTitle } from '../storage/memory.js';
+import { Issue } from '../models/issue.js';
 
 const router = Router();
 
-
-router.get('/', (_, res) => {
-  res.json(getAllIssues());
-  return;
+// GET /issues
+router.get('/', async (_: Request, res: Response): Promise<void> => {
+  try {
+    const issues: Issue[] = getAllIssues();
+    res.json(issues);
+  } catch (error) {
+    res.status(500).json({ mess: (error as Error).message });
+  }
 });
 
-router.get('/:id', (req, res) => {
+// GET /issues/:id
+router.get('/:id', async (req: Request, res: Response): Promise<void> => {
   const issue = getIssue(req.params.id);
   if (!issue) {
     res.status(404).json({ error: "Issue not found" });
@@ -19,7 +25,8 @@ router.get('/:id', (req, res) => {
   return;
 });
 
-router.post('/', json(), (req, res) => {
+// POST /issues
+router.post('/', json(), async (req: Request, res: Response): Promise<void> => {
   const { url } = req.body;
   if (!url) {
     res.status(400).json({ error: 'Missing issue URL' });
@@ -36,7 +43,8 @@ router.post('/', json(), (req, res) => {
   return;
 });
 
-router.patch('/:id/title', json(), (req, res) => {
+// PATCH /issues/:id/title
+router.patch('/:id/title', json(), async (req: Request, res: Response): Promise<void> => {
   const { title } = req.body;
   if (!title) {
     res.status(400).json({ error: "Missing issute Title" });
@@ -52,7 +60,8 @@ router.patch('/:id/title', json(), (req, res) => {
   return;
 })
 
-router.delete('/:id', (req, res) => {
+// DELETE /issues/:id
+router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
   const success = deleteIssue(req.params.id);
   if (!success) {
     res.status(404).json({ error: 'Not found' });
@@ -62,7 +71,8 @@ router.delete('/:id', (req, res) => {
   return;
 });
 
-router.get('/:id/status', async (req, res) => {
+// GET /issues/:id/status
+router.get('/:id/status', async (req: Request, res: Response): Promise<void> => {
   const issue = getIssue(req.params.id);
   if (!issue) {
     res.status(404).json({ error: 'Issue not found' });
