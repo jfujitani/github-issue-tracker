@@ -9,7 +9,8 @@
     "start": "node dist/server.js",
     "dev": "node --loader ts-node/esm src/server.ts",
     "debug": "node --loader ts-node/esm --inspect src/server.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test-watch": "vitest"
   },
   "author": "jfujitani",
   "license": "MIT",
