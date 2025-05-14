@@ -5,5 +5,6 @@ export interface Issue {
   repo: string;
   number: number;
   title?: string;
-  state?: string;
+  status?: string;
 }
+

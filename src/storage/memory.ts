@@ -22,7 +22,7 @@ export function updateTitle(id: string, newTitle: string): boolean {
   return true;
 }
 
-export function getAllIssues() {
+export function getAllIssues(): Issue[] {
   return Array.from(issues.values());
 }
 

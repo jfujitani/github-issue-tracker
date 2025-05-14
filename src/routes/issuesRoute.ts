@@ -1,32 +1,37 @@
 import { Router, Request, Response, json } from 'express';
 import { addIssue, getAllIssues, deleteIssue, getIssue, updateTitle } from '../storage/memory.js';
 import { Issue } from '../models/issue.js';
+import { IssueDto, CreateIssueDto, UpdateIssueTitleDto } from './issue.dto.js';
+import { ApiResponse } from './apiResponse.dto.js';
 
 const router = Router();
 
 // GET /issues
-router.get('/', async (_: Request, res: Response): Promise<void> => {
+router.get('/', async (_: Request, res: Response<ApiResponse<IssueDto[]>>): Promise<void> => {
   try {
     const issues: Issue[] = getAllIssues();
-    res.json(issues);
+    const dtos: IssueDto[] = issues.map(issue => (
+      mapIssueToDto(issue)
+    ));
+    res.json(dtos);
   } catch (error) {
-    res.status(500).json({ mess: (error as Error).message });
+    res.status(500).json({ error: (error as Error).message });
   }
 });
 
 // GET /issues/:id
-router.get('/:id', async (req: Request, res: Response): Promise<void> => {
+router.get('/:id', async (req: Request, res: Response<ApiResponse<IssueDto>>) => {
   const issue = getIssue(req.params.id);
   if (!issue) {
     res.status(404).json({ error: "Issue not found" });
     return;
   }
-  res.status(200).json(issue);
-  return;
+  res.status(200).json(mapIssueToDto(issue));
 });
 
 // POST /issues
-router.post('/', json(), async (req: Request, res: Response): Promise<void> => {
+router.post('/', json(), async (req: Request<{}, {}, CreateIssueDto>,
+  res: Response<ApiResponse<IssueDto>>) => {
   const { url } = req.body;
   if (!url) {
     res.status(400).json({ error: 'Missing issue URL' });
@@ -39,12 +44,12 @@ router.post('/', json(), async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  res.status(201).json(issue);
-  return;
+  res.status(201).json(mapIssueToDto(issue));
 });
 
 // PATCH /issues/:id/title
-router.patch('/:id/title', json(), async (req: Request, res: Response): Promise<void> => {
+router.patch('/:id/title', json(), async (req: Request<{ id: string }, {},
+  UpdateIssueTitleDto>, res: Response<ApiResponse<IssueDto>>): Promise<void> => {
   const { title } = req.body;
   if (!title) {
     res.status(400).json({ error: "Missing issute Title" });
@@ -53,26 +58,27 @@ router.patch('/:id/title', json(), async (req: Request, res: Response): Promise<
 
   if (updateTitle(req.params.id, title)) {
     const issue = getIssue(req.params.id);
-    res.status(200).json(issue);
-    return;
+    if (!issue) {
+      res.status(404).json({ error: "Issue not found" });
+      return;
+    }
+    res.status(200).json(mapIssueToDto(issue));
   }
-  res.status(404).json({ error: "Issue not found" });
-  return;
-})
+});
 
 // DELETE /issues/:id
-router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
+router.delete('/:id', async (req: Request, res: Response<ApiResponse<void>>) => {
   const success = deleteIssue(req.params.id);
   if (!success) {
     res.status(404).json({ error: 'Not found' });
     return;
   }
   res.status(204).end();
-  return;
 });
 
 // GET /issues/:id/status
-router.get('/:id/status', async (req: Request, res: Response): Promise<void> => {
+// Todo define and return correct dto for this
+router.get('/:id/status', async (req: Request, res: Response<ApiResponse<IssueDto>>): Promise<void> => {
   const issue = getIssue(req.params.id);
   if (!issue) {
     res.status(404).json({ error: 'Issue not found' });
@@ -87,12 +93,11 @@ router.get('/:id/status', async (req: Request, res: Response): Promise<void> => 
       });
       if (!response.ok) throw new Error('GitHub API error');
       const data = await response.json();
-      res.json({
-        title: data.title,
-        state: data.state,
-        comments: data.comments,
-        url: data.html_url
-      });
+      const issueDto = mapIssueToDto(issue);
+      // Todo consider if this should be retrived and stored before this point. 
+      issueDto.status = data.state;
+      issueDto.title = data.title;
+      res.json(issueDto);
       return;
     } catch (err) {
       res.status(500).json({ error: 'Failed to fetch issue status' });
@@ -100,7 +105,18 @@ router.get('/:id/status', async (req: Request, res: Response): Promise<void> => 
     }
   }
   res.status(500).json({ error: 'Failed to fetch issue status' });
-  return;
 });
+
+function mapIssueToDto(issue: Issue): IssueDto {
+  return {
+    id: issue.id,
+    url: issue.url,
+    owner: issue.owner,
+    repo: issue.repo,
+    number: issue.number as number,
+    title: issue.title,
+    status: issue.status
+  }
+}
 
 export default router;
