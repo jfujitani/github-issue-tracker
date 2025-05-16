@@ -1,4 +1,4 @@
-export interface IssueDto {
+export type IssueDto = {
   id: string;
   url: string;
   owner: string;
@@ -8,10 +8,10 @@ export interface IssueDto {
   status?: string;
 }
 
-export interface CreateIssueDto {
+export type CreateIssueDto = {
   url: string;
 }
 
-export interface UpdateIssueTitleDto {
+export type UpdateIssueTitleDto = {
   title: string;
 }
