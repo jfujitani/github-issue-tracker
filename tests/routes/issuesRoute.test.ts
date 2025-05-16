@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import request from 'supertest';
 import { app } from '../../src/server.js';
-import * as memory from '../../src/storage/memory.js';
 
 describe('Issue API', () => {
   let createdId: string;
@@ -57,40 +56,14 @@ describe('Issue API', () => {
     expect(res.body.title).toBe(update.title);
   });
 
-  it('DELETE /api/issues/:id should delete the issue', async () => {
-    const res = await request(app).delete(`/api/issues/${createdId}`);
-    expect(res.status).toBe(204);
-  });
-
-  it('GET /api/issues/:id should return 404 after deletion', async () => {
-    const res = await request(app).get(`/api/issues/${createdId}`);
-    expect(res.status).toBe(404);
-  });
-
-  it('should return issue status when GitHub API is successful', async () => {
+  it('should return issue status when stubbed fetch is successful', async () => {
     // Arrange
-    vi.spyOn(memory, 'getIssue').mockImplementation((id: string) => {
-      // Return a mocked issue based on the id
-      if (id === '123') {
-        return {
-          id: id,
-          url: "test",
-          owner: 'owner',
-          repo: 'repo',
-          number: 1
-        };
-      }
-      return undefined;
-    });
-    const issueId = '123';
+    const issueId = createdId;
     const mockApiResponse = {
       title: 'Test Issue',
       state: 'open',
-      comments: 5,
-      html_url: 'https://github.com/owner/repo/issues/1',
     };
 
-    // Mock fetch response
     (fetch as Mock).mockResolvedValue({
       ok: true,
       json: vi.fn().mockResolvedValue(mockApiResponse),
@@ -103,7 +76,15 @@ describe('Issue API', () => {
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(mockApiResponse.state);
     expect(response.body.title).toBe(mockApiResponse.title);
-    // expect(response.body.url).toBe(mockApiResponse.html_url);
   });
 
+  it('DELETE /api/issues/:id should delete the issue', async () => {
+    const res = await request(app).delete(`/api/issues/${createdId}`);
+    expect(res.status).toBe(204);
+  });
+
+  it('GET /api/issues/:id should return 404 after deletion', async () => {
+    const res = await request(app).get(`/api/issues/${createdId}`);
+    expect(res.status).toBe(404);
+  });
 });

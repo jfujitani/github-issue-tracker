@@ -1,15 +1,17 @@
 import { Router, Request, Response, json } from 'express';
-import { addIssue, getAllIssues, deleteIssue, getIssue, updateTitle } from '../storage/memory.js';
 import { Issue } from '../models/issue.js';
 import { IssueDto, CreateIssueDto, UpdateIssueTitleDto } from './issue.dto.js';
+import { IssueService } from '../services/issueService.js';
+import { MemoryIssueRepository } from '../storage/memoryIssueRepository.js';
 import { ApiResponse } from './apiResponse.dto.js';
 
 const router = Router();
+const service = new IssueService(new MemoryIssueRepository);
 
 // GET /issues
 router.get('/', async (_: Request, res: Response<ApiResponse<IssueDto[]>>): Promise<void> => {
   try {
-    const issues: Issue[] = getAllIssues();
+    const issues: Issue[] = await service.getAll();
     const dtos: IssueDto[] = issues.map(issue => (
       mapIssueToDto(issue)
     ));
@@ -21,7 +23,7 @@ router.get('/', async (_: Request, res: Response<ApiResponse<IssueDto[]>>): Prom
 
 // GET /issues/:id
 router.get('/:id', async (req: Request, res: Response<ApiResponse<IssueDto>>) => {
-  const issue = getIssue(req.params.id);
+  const issue = await service.getById(req.params.id);
   if (!issue) {
     res.status(404).json({ error: "Issue not found" });
     return;
@@ -30,45 +32,43 @@ router.get('/:id', async (req: Request, res: Response<ApiResponse<IssueDto>>) =>
 });
 
 // POST /issues
-router.post('/', json(), async (req: Request<{}, {}, CreateIssueDto>,
-  res: Response<ApiResponse<IssueDto>>) => {
+router.post('/', json(), async (req: Request<{}, {}, CreateIssueDto>, res: Response<ApiResponse<IssueDto>>) => {
   const { url } = req.body;
   if (!url) {
     res.status(400).json({ error: 'Missing issue URL' });
     return;
   }
 
-  const issue = addIssue(url);
-  if (!issue) {
-    res.status(400).json({ error: 'Invalid GitHub issue URL' });
+  const issue = Issue.fromUrl(url);
+  const result = await service.create(issue); if (result) {
+    res.status(201).json(mapIssueToDto(issue));
     return;
   }
-
-  res.status(201).json(mapIssueToDto(issue));
+  res.status(400).json({ error: 'Invalid GitHub issue URL' });
 });
 
 // PATCH /issues/:id/title
-router.patch('/:id/title', json(), async (req: Request<{ id: string }, {},
-  UpdateIssueTitleDto>, res: Response<ApiResponse<IssueDto>>): Promise<void> => {
+router.patch('/:id/title', json(), async (req: Request<{ id: string }, {}, UpdateIssueTitleDto>, res: Response<ApiResponse<IssueDto>>): Promise<void> => {
   const { title } = req.body;
   if (!title) {
     res.status(400).json({ error: "Missing issute Title" });
     return;
   }
 
-  if (updateTitle(req.params.id, title)) {
-    const issue = getIssue(req.params.id);
-    if (!issue) {
-      res.status(404).json({ error: "Issue not found" });
-      return;
-    }
-    res.status(200).json(mapIssueToDto(issue));
+
+  const issue = await service.getById(req.params.id);
+  if (!issue) {
+    res.status(404).json({ error: "Issue not found" });
+    return;
   }
+  await service.updateTitle(req.params.id, title);
+
+  res.status(200).json(mapIssueToDto(issue));
 });
 
 // DELETE /issues/:id
 router.delete('/:id', async (req: Request, res: Response<ApiResponse<void>>) => {
-  const success = deleteIssue(req.params.id);
+  const success = await service.delete(req.params.id);
   if (!success) {
     res.status(404).json({ error: 'Not found' });
     return;
@@ -79,32 +79,11 @@ router.delete('/:id', async (req: Request, res: Response<ApiResponse<void>>) => 
 // GET /issues/:id/status
 // Todo define and return correct dto for this
 router.get('/:id/status', async (req: Request, res: Response<ApiResponse<IssueDto>>): Promise<void> => {
-  const issue = getIssue(req.params.id);
-  if (!issue) {
-    res.status(404).json({ error: 'Issue not found' });
-    return;
+  const status = await service.getStatus(req.params.id);
+  if (status) {
+    res.json(mapIssueToDto(status));
   }
-
-  if (issue !== null) {
-    const apiUrl = `https://api.github.com/repos/${issue.owner}/${issue.repo}/issues/${issue.number}`;
-    try {
-      const response = await fetch(apiUrl, {
-        headers: { 'User-Agent': 'Github-Issue-Tracker' }
-      });
-      if (!response.ok) throw new Error('GitHub API error');
-      const data = await response.json();
-      const issueDto = mapIssueToDto(issue);
-      // Todo consider if this should be retrived and stored before this point. 
-      issueDto.status = data.state;
-      issueDto.title = data.title;
-      res.json(issueDto);
-      return;
-    } catch (err) {
-      res.status(500).json({ error: 'Failed to fetch issue status' });
-      return;
-    }
-  }
-  res.status(500).json({ error: 'Failed to fetch issue status' });
+  res.status(404).json({ error: 'Issue not found' });
 });
 
 function mapIssueToDto(issue: Issue): IssueDto {
