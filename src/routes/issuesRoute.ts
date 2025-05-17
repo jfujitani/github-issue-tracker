@@ -9,12 +9,10 @@ const router = Router();
 const service = new IssueService(new MemoryIssueRepository);
 
 // GET /issues
-router.get('/', async (_: Request, res: Response<ApiResponse<IssueDto[]>>): Promise<void> => {
+router.get('/', async (_: Request, res: Response<ApiResponse<IssueDto[]>>) => {
   try {
     const issues: Issue[] = await service.getAll();
-    const dtos: IssueDto[] = issues.map(issue => (
-      mapIssueToDto(issue)
-    ));
+    const dtos: IssueDto[] = issues.map(issue => (mapIssueToDto(issue)));
     res.status(200).json(dtos);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
@@ -56,7 +54,7 @@ router.post('/', json(), async (req: Request<{}, {}, CreateIssueDto>, res: Respo
 });
 
 // PATCH /issues/:id/title
-router.patch('/:id/title', json(), async (req: Request<{ id: string }, {}, UpdateIssueTitleDto>, res: Response<ApiResponse<IssueDto>>): Promise<void> => {
+router.patch('/:id/title', json(), async (req: Request<{ id: string }, {}, UpdateIssueTitleDto>, res: Response<ApiResponse<IssueDto>>) => {
   const { title } = req.body;
   if (!title) {
     res.status(400).json({ error: 'Missing issue Title' });
@@ -90,7 +88,7 @@ router.delete('/:id', async (req: Request, res: Response<ApiResponse<void>>) => 
 });
 
 // GET /issues/:id/status
-router.get('/:id/status', async (req: Request, res: Response<ApiResponse<IssueDto>>): Promise<void> => {
+router.get('/:id/status', async (req: Request, res: Response<ApiResponse<IssueDto>>) => {
   try {
     const status = await service.getStatus(req.params.id);
     if (!status) {
