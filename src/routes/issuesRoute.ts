@@ -46,14 +46,14 @@ router.post('/', json(), async (req: Request<{}, {}, CreateIssueDto>, res: Respo
   const issue = Issue.fromUrl(url);
   try {
     const result = await service.create(issue);
-    if (result) {
-      res.status(201).json(mapIssueToDto(issue));
+    if (!result) {
+      res.status(400).json({ error: 'Invalid GitHub issue URL' });
       return;
     }
+    res.status(201).json(mapIssueToDto(issue));
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
-  res.status(400).json({ error: 'Invalid GitHub issue URL' });
 });
 
 // PATCH /issues/:id/title
@@ -94,10 +94,11 @@ router.delete('/:id', async (req: Request, res: Response<ApiResponse<void>>) => 
 router.get('/:id/status', async (req: Request, res: Response<ApiResponse<IssueDto>>): Promise<void> => {
   try {
     const status = await service.getStatus(req.params.id);
-    if (status) {
-      res.json(mapIssueToDto(status));
+    if (!status) {
+      res.status(404).json({ error: 'Issue not found' });
+      return
     }
-    res.status(404).json({ error: 'Issue not found' });
+    res.json(mapIssueToDto(status));
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
