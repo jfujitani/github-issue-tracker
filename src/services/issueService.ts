@@ -15,13 +15,13 @@ export class IssueService {
     return await this.repository.getById(id);
   }
 
-  async updateTitle(id: string, newTitle: string): Promise<Issue | null> {
+  async updateTitle(id: string, newTitle: string): Promise<Issue> {
     const issue = await this.repository.getById(id);
-    if (!issue) return null;
-
+    if (!issue) {
+      throw new Error('Issue not found');
+    }
     issue.title = newTitle;
-    await this.repository.create(issue);
-    return issue;
+    return await this.repository.update(issue);
   }
 
   async delete(id: string): Promise<boolean> {

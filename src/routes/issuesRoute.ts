@@ -65,18 +65,12 @@ router.patch('/:id/title', json(), async (req: Request<{ id: string }, {}, Updat
   }
 
   try {
-    const issue = await service.getById(req.params.id);
-    await service.updateTitle(req.params.id, title);
+    const issue = await service.updateTitle(req.params.id, title);
     if (!issue) {
-      res.status(404).json({ error: 'Issue not found' });
-      return;
-    }
-    const updatedIssue = await service.getById(req.params.id);
-    if (!updatedIssue) {
       res.status(500).json({ error: "Error updating issue" });
       return;
     }
-    res.status(200).json(updatedIssue);
+    res.status(200).json(issue);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
