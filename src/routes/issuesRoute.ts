@@ -81,7 +81,7 @@ router.delete('/:id', async (req: Request, res: Response<ApiResponse<void>>) => 
   try {
     const success = await service.delete(req.params.id);
     if (!success) {
-      res.status(404).json({ error: 'Not found' });
+      res.status(500).json({ error: 'Unable to delete' });
       return;
     }
     res.status(204).end();
