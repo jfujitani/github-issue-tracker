@@ -27,7 +27,6 @@ export class MemoryIssueRepository implements IssueRepository {
   }
 
   async delete(id: string): Promise<boolean> {
-    this.issues.delete(id);
-    return true;
+    return this.issues.delete(id);
   }
 }

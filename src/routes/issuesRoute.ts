@@ -15,7 +15,7 @@ router.get('/', async (_: Request, res: Response<ApiResponse<IssueDto[]>>): Prom
     const dtos: IssueDto[] = issues.map(issue => (
       mapIssueToDto(issue)
     ));
-    res.json(dtos);
+    res.status(200).json(dtos);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
@@ -23,12 +23,16 @@ router.get('/', async (_: Request, res: Response<ApiResponse<IssueDto[]>>): Prom
 
 // GET /issues/:id
 router.get('/:id', async (req: Request, res: Response<ApiResponse<IssueDto>>) => {
-  const issue = await service.getById(req.params.id);
-  if (!issue) {
-    res.status(404).json({ error: "Issue not found" });
-    return;
+  try {
+    const issue = await service.getById(req.params.id);
+    if (!issue) {
+      res.status(404).json({ error: "Issue not found" });
+      return;
+    }
+    res.status(200).json(mapIssueToDto(issue));
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
   }
-  res.status(200).json(mapIssueToDto(issue));
 });
 
 // POST /issues
@@ -40,9 +44,14 @@ router.post('/', json(), async (req: Request<{}, {}, CreateIssueDto>, res: Respo
   }
 
   const issue = Issue.fromUrl(url);
-  const result = await service.create(issue); if (result) {
-    res.status(201).json(mapIssueToDto(issue));
-    return;
+  try {
+    const result = await service.create(issue);
+    if (result) {
+      res.status(201).json(mapIssueToDto(issue));
+      return;
+    }
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
   }
   res.status(400).json({ error: 'Invalid GitHub issue URL' });
 });
@@ -51,39 +60,49 @@ router.post('/', json(), async (req: Request<{}, {}, CreateIssueDto>, res: Respo
 router.patch('/:id/title', json(), async (req: Request<{ id: string }, {}, UpdateIssueTitleDto>, res: Response<ApiResponse<IssueDto>>): Promise<void> => {
   const { title } = req.body;
   if (!title) {
-    res.status(400).json({ error: "Missing issute Title" });
+    res.status(400).json({ error: 'Missing issue Title' });
     return;
   }
 
-
-  const issue = await service.getById(req.params.id);
-  if (!issue) {
-    res.status(404).json({ error: "Issue not found" });
-    return;
+  try {
+    const issue = await service.getById(req.params.id);
+    await service.updateTitle(req.params.id, title);
+    if (!issue) {
+      res.status(404).json({ error: 'Issue not found' });
+      return;
+    }
+    const updatedIssue = await service.getById(req.params.id);
+    res.status(200).json(updatedIssue);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
   }
-  await service.updateTitle(req.params.id, title);
-
-  res.status(200).json(mapIssueToDto(issue));
 });
 
 // DELETE /issues/:id
 router.delete('/:id', async (req: Request, res: Response<ApiResponse<void>>) => {
-  const success = await service.delete(req.params.id);
-  if (!success) {
-    res.status(404).json({ error: 'Not found' });
-    return;
+  try {
+    const success = await service.delete(req.params.id);
+    if (!success) {
+      res.status(404).json({ error: 'Not found' });
+      return;
+    }
+    res.status(204).end();
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
   }
-  res.status(204).end();
 });
 
 // GET /issues/:id/status
-// Todo define and return correct dto for this
 router.get('/:id/status', async (req: Request, res: Response<ApiResponse<IssueDto>>): Promise<void> => {
-  const status = await service.getStatus(req.params.id);
-  if (status) {
-    res.json(mapIssueToDto(status));
+  try {
+    const status = await service.getStatus(req.params.id);
+    if (status) {
+      res.json(mapIssueToDto(status));
+    }
+    res.status(404).json({ error: 'Issue not found' });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
   }
-  res.status(404).json({ error: 'Issue not found' });
 });
 
 function mapIssueToDto(issue: Issue): IssueDto {
