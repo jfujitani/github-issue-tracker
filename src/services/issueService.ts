@@ -4,7 +4,8 @@ import { IssueRepository } from '../storage/issueRepository.js';
 export class IssueService {
   constructor(private readonly repository: IssueRepository) { }
 
-  async create(issue: Issue): Promise<Issue> {
+  async create(url: string): Promise<Issue> {
+    const issue = Issue.fromUrl(url);
     const existing = await this.repository.getById(issue.id);
     if (existing) return existing;
 
@@ -21,7 +22,7 @@ export class IssueService {
       throw new Error('Issue not found');
     }
     issue.title = newTitle;
-    return await this.repository.update(issue);
+    return await this.repository.create(issue);
   }
 
   async delete(id: string): Promise<boolean> {

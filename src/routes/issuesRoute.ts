@@ -43,10 +43,9 @@ router.post('/', json(), async (req: Request<{}, {}, CreateIssueDto>, res: Respo
     return;
   }
 
-  const issue = Issue.fromUrl(url);
   try {
-    const result = await service.create(issue);
-    if (!result) {
+    const issue = await service.create(url);
+    if (!issue) {
       res.status(400).json({ error: 'Invalid GitHub issue URL' });
       return;
     }
