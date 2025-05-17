@@ -4,9 +4,9 @@ import { IssueRepository } from '../storage/issueRepository.js';
 export class IssueService {
   constructor(private readonly repository: IssueRepository) { }
 
-  async create(issue: Issue): Promise<boolean> {
+  async create(issue: Issue): Promise<Issue> {
     const existing = await this.repository.getById(issue.id);
-    if (existing) return false;
+    if (existing) return existing;
 
     return await this.repository.create(issue);
   }

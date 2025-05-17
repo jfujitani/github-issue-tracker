@@ -17,9 +17,9 @@ export class MemoryIssueRepository implements IssueRepository {
     return issue;
   }
 
-  async create(issue: Issue): Promise<boolean> {
+  async create(issue: Issue): Promise<Issue> {
     this.issues.set(issue.id, issue);
-    return true;
+    return issue;
   }
 
   async update(issue: Issue): Promise<boolean> {
