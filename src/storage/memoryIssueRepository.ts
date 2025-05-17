@@ -9,11 +9,15 @@ export class MemoryIssueRepository implements IssueRepository {
     return [...this.issues.values()];
   }
 
-  async getById(id: string): Promise<Issue | undefined> {
-    return this.issues.get(id);
+  async getById(id: string): Promise<Issue | null> {
+    const issue = this.issues.get(id);
+    if (!issue) {
+      return null;
+    }
+    return issue;
   }
 
-  async save(issue: Issue): Promise<boolean> {
+  async create(issue: Issue): Promise<boolean> {
     this.issues.set(issue.id, issue);
     return true;
   }

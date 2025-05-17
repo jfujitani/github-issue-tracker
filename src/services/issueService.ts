@@ -8,10 +8,10 @@ export class IssueService {
     const existing = await this.repository.getById(issue.id);
     if (existing) return false;
 
-    return await this.repository.save(issue);
+    return await this.repository.create(issue);
   }
 
-  async getById(id: string): Promise<Issue | undefined> {
+  async getById(id: string): Promise<Issue | null> {
     return await this.repository.getById(id);
   }
 
@@ -20,7 +20,7 @@ export class IssueService {
     if (!issue) return undefined;
 
     issue.title = newTitle;
-    await this.repository.save(issue);
+    await this.repository.create(issue);
     return issue;
   }
 

@@ -72,6 +72,10 @@ router.patch('/:id/title', json(), async (req: Request<{ id: string }, {}, Updat
       return;
     }
     const updatedIssue = await service.getById(req.params.id);
+    if (!updatedIssue) {
+      res.status(500).json({ error: "Error updating issue" });
+      return;
+    }
     res.status(200).json(updatedIssue);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
