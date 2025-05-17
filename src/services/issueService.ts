@@ -33,10 +33,10 @@ export class IssueService {
     return this.repository.getAll();
   }
 
-  async getStatus(id: string): Promise<Issue | undefined> {
+  async getStatus(id: string): Promise<Issue | null> {
     const issue = await this.getById(id);
     if (!issue) {
-      return undefined;
+      return null;
     }
 
     const apiUrl = `https://api.github.com/repos/${issue.owner}/${issue.repo}/issues/${issue.number}`;
@@ -51,7 +51,7 @@ export class IssueService {
       return issue;
 
     } catch (err) {
-      return undefined;
+      return null;
     }
 
   }
