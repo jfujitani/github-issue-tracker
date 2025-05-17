@@ -15,9 +15,9 @@ export class IssueService {
     return await this.repository.getById(id);
   }
 
-  async updateTitle(id: string, newTitle: string): Promise<Issue | undefined> {
+  async updateTitle(id: string, newTitle: string): Promise<Issue | null> {
     const issue = await this.repository.getById(id);
-    if (!issue) return undefined;
+    if (!issue) return null;
 
     issue.title = newTitle;
     await this.repository.create(issue);

@@ -22,12 +22,12 @@ export class MemoryIssueRepository implements IssueRepository {
     return issue;
   }
 
-  async update(issue: Issue): Promise<boolean> {
+  async update(issue: Issue): Promise<Issue> {
     if (!this.issues.has(issue.id)) {
       throw new Error(`Issue with id ${issue.id} not found.`);
     }
     this.issues.set(issue.id, issue);
-    return true;
+    return issue;
   }
 
   async delete(id: string): Promise<boolean> {
