@@ -10,5 +10,8 @@ export type CreateIssueDto = {
   url: string;
 }
 
+export type IssueStatus = {
+  id: string;
+  status: string;
   title: string;
 }
