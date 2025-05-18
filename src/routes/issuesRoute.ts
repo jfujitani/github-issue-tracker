@@ -1,6 +1,7 @@
 import { Router, Request, Response, json } from 'express';
 import { Issue } from '../models/issue.js';
-import { IssueDto, CreateIssueDto } from './issue.dto.js';
+import { IssueStatus } from '../models/issueStatus.js';
+import { IssueDto, CreateIssueDto, IssueStatusDto } from './issue.dto.js';
 import { IssueService } from '../services/issueService.js';
 import { MemoryIssueRepository } from '../storage/memoryIssueRepository.js';
 import { ApiResponse } from './apiResponse.dto.js';
@@ -67,18 +68,25 @@ router.delete('/:id', async (req: Request, res: Response<ApiResponse<void>>) => 
 });
 
 // GET /issues/:id/status
-router.get('/:id/status', async (req: Request, res: Response<ApiResponse<IssueDto>>) => {
+router.get('/:id/status', async (req: Request, res: Response<ApiResponse<IssueStatusDto>>) => {
   try {
+    const issue = await service.getById(req.params.id);
+    if (!issue) {
+      res.status(404).json({ error: 'Issue not found' });
+      return;
+    }
     const status = await service.getStatus(req.params.id);
     if (!status) {
       res.status(404).json({ error: 'Issue not found' });
       return
     }
-    res.json(mapIssueToDto(status));
+    res.json(mapToIssueStatusDto(issue, status));
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 });
+
+export default router;
 
 function mapIssueToDto(issue: Issue): IssueDto {
   return {
@@ -90,4 +98,16 @@ function mapIssueToDto(issue: Issue): IssueDto {
   }
 }
 
-export default router;
+function mapToIssueStatusDto(
+  issue: Issue,
+  issueStatus: IssueStatus
+): IssueStatusDto {
+  return {
+    id: issue.id,
+    status: issueStatus.status === 'open' || issueStatus.status === 'closed'
+      ? issueStatus.status
+      : 'other',
+    title: issueStatus.title,
+  };
+}
+

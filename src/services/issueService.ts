@@ -1,4 +1,5 @@
 import { Issue } from '../models/issue';
+import { IssueStatus } from '../models/issueStatus';
 import { IssueRepository } from '../storage/issueRepository.js';
 
 export class IssueService {
@@ -33,7 +34,7 @@ export class IssueService {
     return this.repository.getAll();
   }
 
-  async getStatus(id: string): Promise<Issue | null> {
+  async getStatus(id: string): Promise<IssueStatus | null> {
     const issue = await this.getById(id);
     if (!issue) {
       return null;
@@ -46,9 +47,8 @@ export class IssueService {
       });
       if (!response.ok) throw new Error('GitHub API error');
       const data = await response.json();
-      issue.status = data.state;
-      issue.title = data.title;
-      return issue;
+
+      return { title: data.title, status: data.state as IssueStatus['status'] };
 
     } catch (err) {
       return null;

@@ -10,7 +10,7 @@ export type CreateIssueDto = {
   url: string;
 }
 
-export type IssueStatus = {
+export type IssueStatusDto = {
   id: string;
   status: string;
   title: string;
