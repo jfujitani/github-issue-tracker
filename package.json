@@ -6,11 +6,11 @@
   "main": "src/server.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js",
-    "dev": "node --loader ts-node/esm src/server.ts",
-    "debug": "node --loader ts-node/esm --inspect src/server.ts",
-    "test": "vitest run",
-    "test-watch": "vitest"
+    "start": "ISSUE_STORAGE_PATH=dist/issues.json node dist/server.js",
+    "dev": "ISSUE_STORAGE_PATH=dist/issues.json node --loader ts-node/esm src/server.ts",
+    "debug": "ISSUE_REPOSITORY=memory node --loader ts-node/esm --inspect src/server.ts",
+    "test": "ISSUE_REPOSITORY=memory vitest run",
+    "test-watch": "ISSUE_REPOSITORY=memory vitest"
   },
   "author": "jfujitani",
   "license": "MIT",
