@@ -4,14 +4,11 @@ export type IssueDto = {
   owner: string;
   repo: string;
   number: number;
-  title?: string;
-  status?: string;
 }
 
 export type CreateIssueDto = {
   url: string;
 }
 
-export type UpdateIssueTitleDto = {
   title: string;
 }

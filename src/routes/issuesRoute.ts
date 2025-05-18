@@ -1,6 +1,6 @@
 import { Router, Request, Response, json } from 'express';
 import { Issue } from '../models/issue.js';
-import { IssueDto, CreateIssueDto, UpdateIssueTitleDto } from './issue.dto.js';
+import { IssueDto, CreateIssueDto } from './issue.dto.js';
 import { IssueService } from '../services/issueService.js';
 import { MemoryIssueRepository } from '../storage/memoryIssueRepository.js';
 import { ApiResponse } from './apiResponse.dto.js';
@@ -12,8 +12,7 @@ const service = new IssueService(new MemoryIssueRepository);
 router.get('/', async (_: Request, res: Response<ApiResponse<IssueDto[]>>) => {
   try {
     const issues: Issue[] = await service.getAll();
-    const dtos: IssueDto[] = issues.map(issue => (mapIssueToDto(issue)));
-    res.status(200).json(dtos);
+    res.status(200).json(issues.map(issue => (mapIssueToDto(issue))));
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
@@ -48,26 +47,6 @@ router.post('/', json(), async (req: Request<{}, {}, CreateIssueDto>, res: Respo
       return;
     }
     res.status(201).json(mapIssueToDto(issue));
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
-  }
-});
-
-// PATCH /issues/:id/title
-router.patch('/:id/title', json(), async (req: Request<{ id: string }, {}, UpdateIssueTitleDto>, res: Response<ApiResponse<IssueDto>>) => {
-  const { title } = req.body;
-  if (!title) {
-    res.status(400).json({ error: 'Missing issue Title' });
-    return;
-  }
-
-  try {
-    const issue = await service.updateTitle(req.params.id, title);
-    if (!issue) {
-      res.status(500).json({ error: "Error updating issue" });
-      return;
-    }
-    res.status(200).json(issue);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
@@ -108,8 +87,6 @@ function mapIssueToDto(issue: Issue): IssueDto {
     owner: issue.owner,
     repo: issue.repo,
     number: issue.number as number,
-    title: issue.title,
-    status: issue.status
   }
 }
 
