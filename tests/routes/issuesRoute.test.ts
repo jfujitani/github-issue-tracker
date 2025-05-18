@@ -76,4 +76,5 @@ describe('Issue API', () => {
     const res = await request(app).get(`/api/issues/${createdId}`);
     expect(res.status).toBe(404);
   });
+
 });

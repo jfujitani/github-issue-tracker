@@ -3,10 +3,12 @@ import { Issue, IssueStatus } from '../models/issue.model.js';
 import { IssueDto, CreateIssueDto, IssueStatusDto } from './issue.dto.js';
 import { IssueService } from '../services/issueService.js';
 import { MemoryIssueRepository } from '../storage/memoryIssueRepository.js';
+import { JsonIssueRepository } from '../storage/jsonIssueRepository.js';
 import { ApiResponse } from './apiResponse.dto.js';
 
 const router = Router();
-const service = new IssueService(new MemoryIssueRepository);
+// const service = new IssueService(new MemoryIssueRepository);
+const service = new IssueService(new JsonIssueRepository);
 
 // GET /issues
 router.get('/', async (_: Request, res: Response<ApiResponse<IssueDto[]>>) => {
