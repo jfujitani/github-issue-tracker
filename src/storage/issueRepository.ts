@@ -1,4 +1,4 @@
-import { Issue } from '../models/issue.js';
+import { Issue } from '../models/issue.model.js';
 
 export interface IssueRepository {
   getAll(): Promise<Issue[]>;

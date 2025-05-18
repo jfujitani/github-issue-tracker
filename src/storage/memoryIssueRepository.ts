@@ -1,5 +1,5 @@
 import { IssueRepository } from './issueRepository.js';
-import { Issue } from '../models/issue.js';
+import { Issue } from '../models/issue.model.js';
 
 export class MemoryIssueRepository implements IssueRepository {
 

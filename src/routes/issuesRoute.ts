@@ -1,6 +1,5 @@
 import { Router, Request, Response, json } from 'express';
-import { Issue } from '../models/issue.js';
-import { IssueStatus } from '../models/issueStatus.js';
+import { Issue, IssueStatus } from '../models/issue.model.js';
 import { IssueDto, CreateIssueDto, IssueStatusDto } from './issue.dto.js';
 import { IssueService } from '../services/issueService.js';
 import { MemoryIssueRepository } from '../storage/memoryIssueRepository.js';

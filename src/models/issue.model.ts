@@ -64,4 +64,9 @@ export class Issue {
   }
 }
 
+export type IssueStatus = {
+  status: 'open' | 'closed' | string;
+  title: string;
+};
+
 

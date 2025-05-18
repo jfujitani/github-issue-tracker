@@ -1,5 +1,4 @@
-import { Issue } from '../models/issue';
-import { IssueStatus } from '../models/issueStatus';
+import { Issue, IssueStatus } from '../models/issue.model.js';
 import { IssueRepository } from '../storage/issueRepository.js';
 
 export class IssueService {
