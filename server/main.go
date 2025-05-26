@@ -17,10 +17,15 @@ func main() {
 	case "memory", "":
 		store = datastore.NewMemoryIssueStore()
 	case "json-file":
-		store = datastore.NewJsonIssueStore("./build/issues.json")
+		jsonPath := os.Getenv("ISSUE_STORE_PATH")
+		if jsonPath == "" {
+			jsonPath = "./build/issues.json"
+		}
+		store = datastore.NewJsonIssueStore(jsonPath)
 	default:
 		log.Fatalf("Unknown ISSUE_STORE_TYPE: %s", storeType)
 	}
+
 	statusProviderType := os.Getenv("STATUS_PROVIDER_TYPE")
 	var provider services.StatusProvider
 	switch statusProviderType {
