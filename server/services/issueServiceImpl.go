@@ -3,9 +3,11 @@ package services
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"github-issue-tracker-server/datastore"
 	"github-issue-tracker-server/models"
+	"net/http"
 	"net/url"
 	"strings"
 )
@@ -71,10 +73,32 @@ func (s *IssueServiceImpl) DeleteIssue(id string) error {
 }
 
 func (s *IssueServiceImpl) GetStatusByID(id string) (*models.IssueStatus, error) {
+	issue, err := s.store.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	apiUrl := fmt.Sprintf("https://api.github.com/repos/%s/%s/issues/%d", issue.Owner, issue.Repo, int(issue.Number))
+	resp, err := http.Get(apiUrl)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	type githubIssue struct {
+		Title   string `json:"title"`
+		State   string `json:"state"`
+		HtmlUrl string `json:"html_url"`
+	}
+	var ghIssue githubIssue
+	if err := json.NewDecoder(resp.Body).Decode(&ghIssue); err != nil {
+		return nil, err
+	}
+
 	result := models.IssueStatus{
-		Title:  "Issue Status",
-		Status: "Open",
-		Url:    "asdfasdfasd",
+		Title:  ghIssue.Title,
+		Status: ghIssue.State,
+		Url:    ghIssue.HtmlUrl,
 	}
 	return &result, nil
 }
