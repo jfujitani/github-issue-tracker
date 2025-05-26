@@ -6,7 +6,7 @@ import (
 
 type stubStatusProvider struct{}
 
-func NewstubStatusProvider() *stubStatusProvider {
+func NewStubStatusProvider() *stubStatusProvider {
 	return &stubStatusProvider{}
 }
 

@@ -27,7 +27,7 @@ func main() {
 	case "github", "":
 		provider = services.NewGithubStatusProvider()
 	case "stub":
-		provider = services.NewstubStatusProvider()
+		provider = services.NewStubStatusProvider()
 	}
 
 	issueService := services.NewIssueService(store, provider)
