@@ -1,29 +1,32 @@
-# Node.js dependencies
-/node_modules/
+# Binaries for programs and plugins
+github-issue-tracker-server
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
-# TypeScript build output
-/dist/
-/build/
+# Test binary, built with `go test -c`
+*.test
 
-# Log files
-*.log
-npm-debug.log*
+build
 
-# Environment files
+# Code coverage profiles and other test artifacts
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# env file
 .env
 
-# MacOS system files
-.DS_Store
-
-# Linux system files
-*.swp
-
-# Windows system files
-Thumbs.db
-
-# JetBrains IDE settings
-.idea/
-
-# TypeScript local configuration (optional if you don't want to commit it)
-tsconfig.tsbuildinfo
-
+# Editor/IDE
+# .idea/
+# .vscode/
