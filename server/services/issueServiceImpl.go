@@ -3,23 +3,25 @@ package services
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"github-issue-tracker-server/datastore"
 	"github-issue-tracker-server/models"
-	"net/http"
 	"net/url"
 	"strings"
 )
 
 // IssueService provides business logic for issues.
 type IssueServiceImpl struct {
-	store datastore.IssueStore
+	store    datastore.IssueStore
+	provider StatusProvider
 }
 
 // NewIssueService constructs an IssueService with an injected IssueStore.
-func NewIssueService(store datastore.IssueStore) *IssueServiceImpl {
-	return &IssueServiceImpl{store: store}
+func NewIssueService(store datastore.IssueStore, staStatusProvider StatusProvider) *IssueServiceImpl {
+	return &IssueServiceImpl{
+		store:    store,
+		provider: staStatusProvider,
+	}
 }
 
 var lastID = 0
@@ -78,20 +80,8 @@ func (s *IssueServiceImpl) GetStatusByID(id string) (*models.IssueStatus, error)
 		return nil, err
 	}
 
-	apiUrl := fmt.Sprintf("https://api.github.com/repos/%s/%s/issues/%d", issue.Owner, issue.Repo, int(issue.Number))
-	resp, err := http.Get(apiUrl)
+	ghIssue, err := s.provider.GetStatus(issue.Owner, issue.Repo, int(issue.Number))
 	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	type githubIssue struct {
-		Title   string `json:"title"`
-		State   string `json:"state"`
-		HtmlUrl string `json:"html_url"`
-	}
-	var ghIssue githubIssue
-	if err := json.NewDecoder(resp.Body).Decode(&ghIssue); err != nil {
 		return nil, err
 	}
 

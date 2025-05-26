@@ -21,7 +21,16 @@ func main() {
 	default:
 		log.Fatalf("Unknown ISSUE_STORE_TYPE: %s", storeType)
 	}
-	issueService := services.NewIssueService(store)
+	statusProviderType := os.Getenv("STATUS_PROVIDER_TYPE")
+	var provider services.StatusProvider
+	switch statusProviderType {
+	case "github", "":
+		provider = services.NewGithubStatusProvider()
+	case "stub":
+		provider = services.NewstubStatusProvider()
+	}
+
+	issueService := services.NewIssueService(store, provider)
 	server := api.NewServer(issueService)
 
 	r := http.NewServeMux()
