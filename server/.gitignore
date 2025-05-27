@@ -10,6 +10,7 @@ github-issue-tracker-server
 *.test
 
 .data/
+.build/
 
 # Code coverage profiles and other test artifacts
 *.out
