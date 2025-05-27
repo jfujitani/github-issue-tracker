@@ -6,5 +6,11 @@ build: generate
 generate:
 	go generate ./...
 
-docker: build
+test: build 
+	go test -v ./...
+
+test_integration: build
+	go test -v ./integration
+
+docker: build test_all
 	docker build -t github-issue-tracker .

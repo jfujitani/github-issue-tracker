@@ -13,13 +13,14 @@ import (
 func main() {
 	storeType := os.Getenv("ISSUE_STORE_TYPE")
 	var store datastore.IssueStore
+
 	switch storeType {
 	case "memory", "":
 		store = datastore.NewMemoryIssueStore()
 	case "json-file":
-		jsonPath := os.Getenv("ISSUE_STORE_PATH")
-		if jsonPath == "" {
-			jsonPath = "./build/issues.json"
+		var jsonPath string
+		if jsonPath := os.Getenv("ISSUE_STORE_PATH"); jsonPath == "" {
+			jsonPath = "./.data/issues.json"
 		}
 		store = datastore.NewJsonIssueStore(jsonPath)
 	default:
@@ -28,6 +29,7 @@ func main() {
 
 	statusProviderType := os.Getenv("STATUS_PROVIDER_TYPE")
 	var provider services.StatusProvider
+
 	switch statusProviderType {
 	case "github", "":
 		provider = services.NewGithubStatusProvider()

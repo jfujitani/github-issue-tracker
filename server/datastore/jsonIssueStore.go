@@ -15,9 +15,9 @@ type JsonIssueStore struct {
 	jsonFilePath string
 }
 
-func NewJsonIssueStore(path string) *JsonIssueStore {
+func NewJsonIssueStore(filePath string) *JsonIssueStore {
 	return &JsonIssueStore{
-		jsonFilePath: path,
+		jsonFilePath: filePath,
 	}
 }
 

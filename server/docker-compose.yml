@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  github-issue-tracker-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: github-issue-tracker:latest
+    container_name: github-issue-tracker
+    environment:
+      - ISSUE_STORE_TYPE=json-file
+      - STATUS_PROVIDER_TYPE=github
+      - ISSUE_STORE_PATH=/app/data/issues.json
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./build/:/app/data/
+    restart: unless-stopped

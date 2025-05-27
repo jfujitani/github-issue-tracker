@@ -9,7 +9,7 @@ github-issue-tracker-server
 # Test binary, built with `go test -c`
 *.test
 
-build
+.data/
 
 # Code coverage profiles and other test artifacts
 *.out
