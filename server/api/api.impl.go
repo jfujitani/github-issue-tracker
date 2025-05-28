@@ -2,8 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"github-issue-tracker-server/models"
-	"github-issue-tracker-server/services"
+	"github-issue-tracker/models"
+	"github-issue-tracker/services"
 	"net/http"
 )
 

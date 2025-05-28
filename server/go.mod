@@ -1,4 +1,4 @@
-module github-issue-tracker-server
+module github-issue-tracker
 
 go 1.24.3
 
