@@ -17,10 +17,10 @@ type IssueServiceImpl struct {
 }
 
 // NewIssueService constructs an IssueService with an injected IssueStore.
-func NewIssueService(store datastore.IssueStore, staStatusProvider StatusProvider) *IssueServiceImpl {
+func NewIssueService(store *datastore.IssueStore, staStatusProvider *StatusProvider) *IssueServiceImpl {
 	return &IssueServiceImpl{
-		store:    store,
-		provider: staStatusProvider,
+		store:    *store,
+		provider: *staStatusProvider,
 	}
 }
 

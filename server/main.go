@@ -11,34 +11,7 @@ import (
 )
 
 func main() {
-	storeType := os.Getenv("ISSUE_STORE_TYPE")
-	var store datastore.IssueStore
-
-	switch storeType {
-	case "memory", "":
-		store = datastore.NewMemoryIssueStore()
-	case "json-file":
-		var jsonPath string
-		if jsonPath := os.Getenv("ISSUE_STORE_PATH"); jsonPath == "" {
-			jsonPath = "./.data/issues.json"
-		}
-		store = datastore.NewJsonIssueStore(jsonPath)
-	default:
-		log.Fatalf("Unknown ISSUE_STORE_TYPE: %s", storeType)
-	}
-
-	statusProviderType := os.Getenv("STATUS_PROVIDER_TYPE")
-	var provider services.StatusProvider
-
-	switch statusProviderType {
-	case "github", "":
-		provider = services.NewGithubStatusProvider()
-	case "stub":
-		provider = services.NewStubStatusProvider()
-	}
-
-	issueService := services.NewIssueService(store, provider)
-	server := api.NewServer(issueService)
+	server := buildServer()
 
 	r := http.NewServeMux()
 
@@ -53,4 +26,47 @@ func main() {
 
 	fmt.Println("Starting server on :8080...")
 	log.Fatal(s.ListenAndServe())
+}
+
+func buildServer() *api.Server {
+	store := buildDataStore()
+	provider := buildStatusProvider()
+	issueService := services.NewIssueService(store, provider)
+
+	return api.NewServer(issueService)
+}
+
+func buildDataStore() *datastore.IssueStore {
+	storeType := os.Getenv("ISSUE_STORE_TYPE")
+
+	var store datastore.IssueStore
+	switch storeType {
+	case "memory", "":
+		store = datastore.NewMemoryIssueStore()
+		var jsonPath string
+		if jsonPath := os.Getenv("ISSUE_STORE_PATH"); jsonPath == "" {
+			jsonPath = "./.data/issues.json"
+		}
+		store = datastore.NewJsonIssueStore(jsonPath)
+	default:
+		log.Fatalf("Unknown ISSUE_STORE_TYPE: %s", storeType)
+		return nil
+	}
+	return &store
+}
+
+func buildStatusProvider() *services.StatusProvider {
+	statusProviderType := os.Getenv("STATUS_PROVIDER_TYPE")
+
+	var provider services.StatusProvider
+	switch statusProviderType {
+	case "github", "":
+		provider = services.NewGithubStatusProvider()
+	case "stub":
+		provider = services.NewStubStatusProvider()
+	default:
+		log.Fatalf("Unknown STATUS_PROVIDER_TYPE: %s", statusProviderType)
+		return nil
+	}
+	return &provider
 }
