@@ -43,8 +43,9 @@ func buildDataStore() *datastore.IssueStore {
 	switch storeType {
 	case "memory", "":
 		store = datastore.NewMemoryIssueStore()
-		var jsonPath string
-		if jsonPath := os.Getenv("ISSUE_STORE_PATH"); jsonPath == "" {
+	case "json-file":
+		jsonPath := os.Getenv("ISSUE_STORE_PATH")
+		if jsonPath == "" {
 			jsonPath = "./.data/issues.json"
 		}
 		store = datastore.NewJsonIssueStore(jsonPath)

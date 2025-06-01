@@ -22,6 +22,7 @@ WORKDIR /app
 
 # Copy the binary from the builder
 COPY --from=builder /app/server .
+COPY --from=builder /app/public /app/public
 
 # Optionally copy config/data files if needed
 # COPY --from=builder /app/data ./data

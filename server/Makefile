@@ -1,7 +1,7 @@
 .phony: build
 
 build: generate
-	go build ./...
+	go build
 
 generate:
 	go generate ./...
