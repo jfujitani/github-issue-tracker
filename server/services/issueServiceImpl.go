@@ -35,7 +35,11 @@ func (s *IssueServiceImpl) CreateIssue(inputUrl string) (*models.Issue, error) {
 	parts := strings.Split(parsed.Path, "/")
 	// Expecting: ["", "owner", "repo", "issues", "number"]
 	if len(parts) < 5 || parts[3] != "issues" {
-		return nil, err
+		return nil, fmt.Errorf("URL must be a github.com issue link of the form /owner/repo/issues/number")
+	}
+
+	if !strings.EqualFold(parsed.Host, "github.com") {
+		return nil, fmt.Errorf("URL must be a github.com issue link")
 	}
 
 	owner := parts[1]
@@ -46,7 +50,7 @@ func (s *IssueServiceImpl) CreateIssue(inputUrl string) (*models.Issue, error) {
 	var number float32
 	_, err = fmt.Sscanf(numberStr, "%f", &number)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("issue number must be numeric in github issue URL")
 	}
 
 	newID := generateID()
