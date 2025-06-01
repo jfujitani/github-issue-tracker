@@ -32,7 +32,7 @@ func (s Server) GetIssues(w http.ResponseWriter, r *http.Request) {
 func (s Server) GetIssuesId(w http.ResponseWriter, r *http.Request, id string) {
 	issue, err := s.service.GetIssueByID(id)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Failed to get issue")
+		writeErrorResponse(w, http.StatusInternalServerError, "Failed to get issue", err)
 		return
 	}
 	resp := domainToIssueDto(*issue)
@@ -44,12 +44,12 @@ func (s Server) PostIssues(w http.ResponseWriter, r *http.Request) {
 	var dto CreateIssueDto
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
-		writeErrorResponse(w, http.StatusBadRequest, "Invalid request body")
+		writeErrorResponse(w, http.StatusBadRequest, "Invalid request body", err)
 		return
 	}
 	created, err := s.service.CreateIssue(*dto.Url)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Failed to create issue")
+		writeErrorResponse(w, http.StatusInternalServerError, "Failed to create issue", err)
 		return
 	}
 	resp := domainToIssueDto(*created)
@@ -60,7 +60,7 @@ func (s Server) PostIssues(w http.ResponseWriter, r *http.Request) {
 func (s Server) DeleteIssuesId(w http.ResponseWriter, r *http.Request, id string) {
 	err := s.service.DeleteIssue(id)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Failed to delete issue")
+		writeErrorResponse(w, http.StatusInternalServerError, "Failed to delete issue", err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -70,13 +70,13 @@ func (s Server) DeleteIssuesId(w http.ResponseWriter, r *http.Request, id string
 func (s Server) GetIssuesStatus(w http.ResponseWriter, r *http.Request) {
 	issues, err := s.service.GetIssues()
 	if err != nil || len(issues) == 0 {
-		writeErrorResponse(w, http.StatusNotFound, "No issues found")
+		writeErrorResponse(w, http.StatusNotFound, "No issues found", err)
 	}
 	results := []IssueStatusDto{}
 	for _, issue := range issues {
 		status, err := s.service.GetStatusByID(issue.Id)
 		if err != nil || len(issues) == 0 {
-			writeErrorResponse(w, http.StatusInternalServerError, "Error getting status for issue "+issue.Id)
+			writeErrorResponse(w, http.StatusInternalServerError, "Error getting status for issue "+issue.Id, err)
 		}
 		results = append(results, domainToIssueStatusDto(*status))
 	}
@@ -87,7 +87,7 @@ func (s Server) GetIssuesStatus(w http.ResponseWriter, r *http.Request) {
 func (s Server) GetIssuesIdStatus(w http.ResponseWriter, r *http.Request, id string) {
 	issue, err := s.service.GetStatusByID(id)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Failed to get issue status")
+		writeErrorResponse(w, http.StatusInternalServerError, "Failed to get issue status", err)
 	}
 
 	result := IssueStatusDto{
@@ -101,12 +101,16 @@ func (s Server) GetIssuesIdStatus(w http.ResponseWriter, r *http.Request, id str
 }
 
 // Conversion & helpers
-func writeErrorResponse(w http.ResponseWriter, status int, message string) {
-	w.Header().Set("Content-Type", "application/jsone")
+func writeErrorResponse(w http.ResponseWriter, status int, message string, err error) {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
+	fullMessage := message
+	if err != nil {
+		fullMessage += ": " + err.Error()
+	}
 	resp := ErrorResponse{
 		Code:    &status,
-		Message: &message,
+		Message: &fullMessage,
 	}
 	_ = json.NewEncoder(w).Encode(resp)
 }
