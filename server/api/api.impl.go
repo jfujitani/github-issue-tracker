@@ -15,7 +15,7 @@ func NewServer(service services.IssueService) *Server {
 	return &Server{service: service}
 }
 
-func (s Server) GetIssues(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetIssues(w http.ResponseWriter, r *http.Request) {
 	issues, err := s.service.GetIssues()
 	if err != nil {
 		http.Error(w, "Failed to get issues", http.StatusInternalServerError)
@@ -29,7 +29,7 @@ func (s Server) GetIssues(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
-func (s Server) GetIssuesId(w http.ResponseWriter, r *http.Request, id string) {
+func (s *Server) GetIssuesId(w http.ResponseWriter, r *http.Request, id string) {
 	issue, err := s.service.GetIssueByID(id)
 	if err != nil {
 		writeErrorResponse(w, http.StatusInternalServerError, "Failed to get issue", err)
@@ -40,7 +40,7 @@ func (s Server) GetIssuesId(w http.ResponseWriter, r *http.Request, id string) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
-func (s Server) PostIssues(w http.ResponseWriter, r *http.Request) {
+func (s *Server) PostIssues(w http.ResponseWriter, r *http.Request) {
 	var dto CreateIssueDto
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
@@ -57,7 +57,7 @@ func (s Server) PostIssues(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
-func (s Server) DeleteIssuesId(w http.ResponseWriter, r *http.Request, id string) {
+func (s *Server) DeleteIssuesId(w http.ResponseWriter, r *http.Request, id string) {
 	err := s.service.DeleteIssue(id)
 	if err != nil {
 		writeErrorResponse(w, http.StatusInternalServerError, "Failed to delete issue", err)
@@ -67,7 +67,7 @@ func (s Server) DeleteIssuesId(w http.ResponseWriter, r *http.Request, id string
 	_ = json.NewEncoder(w).Encode(map[string]string{"message": "Issue deleted"})
 }
 
-func (s Server) GetIssuesStatus(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetIssuesStatus(w http.ResponseWriter, r *http.Request) {
 	issues, err := s.service.GetIssues()
 	if err != nil || len(issues) == 0 {
 		writeErrorResponse(w, http.StatusNotFound, "No issues found", err)

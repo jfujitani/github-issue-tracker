@@ -50,7 +50,7 @@ func buildServer() *api.Server {
 	return api.NewServer(issueService)
 }
 
-func buildDataStore() *datastore.IssueStore {
+func buildDataStore() datastore.IssueStore {
 	storeType := os.Getenv("ISSUE_STORE_TYPE")
 
 	var store datastore.IssueStore
@@ -67,10 +67,10 @@ func buildDataStore() *datastore.IssueStore {
 		log.Fatalf("Unknown ISSUE_STORE_TYPE: %s", storeType)
 		return nil
 	}
-	return &store
+	return store
 }
 
-func buildStatusProvider() *services.StatusProvider {
+func buildStatusProvider() services.StatusProvider {
 	statusProviderType := os.Getenv("STATUS_PROVIDER_TYPE")
 
 	var provider services.StatusProvider
@@ -83,5 +83,5 @@ func buildStatusProvider() *services.StatusProvider {
 		log.Fatalf("Unknown STATUS_PROVIDER_TYPE: %s", statusProviderType)
 		return nil
 	}
-	return &provider
+	return provider
 }
