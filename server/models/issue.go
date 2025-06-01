@@ -2,7 +2,7 @@ package models
 
 type Issue struct {
 	Id     string
-	Number float32
+	Number int
 	Owner  string
 	Repo   string
 	Url    string

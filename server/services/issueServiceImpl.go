@@ -7,6 +7,7 @@ import (
 	"github-issue-tracker/datastore"
 	"github-issue-tracker/models"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -47,8 +48,8 @@ func (s *IssueServiceImpl) CreateIssue(inputUrl string) (*models.Issue, error) {
 	numberStr := parts[4]
 	urlCopy := inputUrl
 
-	var number float32
-	_, err = fmt.Sscanf(numberStr, "%f", &number)
+	var number int
+	number, err = strconv.Atoi(numberStr)
 	if err != nil {
 		return nil, fmt.Errorf("issue number must be numeric in github issue URL")
 	}

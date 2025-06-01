@@ -28,11 +28,11 @@ type ErrorResponse struct {
 
 // IssueDto defines model for IssueDto.
 type IssueDto struct {
-	Id     *string  `json:"id,omitempty"`
-	Number *float32 `json:"number,omitempty"`
-	Owner  *string  `json:"owner,omitempty"`
-	Repo   *string  `json:"repo,omitempty"`
-	Url    *string  `json:"url,omitempty"`
+	Id     *string `json:"id,omitempty"`
+	Number *int    `json:"number,omitempty"`
+	Owner  *string `json:"owner,omitempty"`
+	Repo   *string `json:"repo,omitempty"`
+	Url    *string `json:"url,omitempty"`
 }
 
 // IssueStatusDto defines model for IssueStatusDto.

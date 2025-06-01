@@ -152,7 +152,7 @@ components:
         repo:
           type: string
         number:
-          type: number
+          type: integer
     CreateIssueDto:
       type: object
       properties:
