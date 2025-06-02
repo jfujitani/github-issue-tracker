@@ -14,5 +14,5 @@ test: build
 test_integration: build
 	$(MAKE) -C server test_integration 
 
-docker: test
+docker: build
 	$(MAKE) -C server docker 

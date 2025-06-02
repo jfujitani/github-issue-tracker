@@ -10,11 +10,11 @@ generate:
 	$(warning server ********************************************)
 	@echo "***************************************************************"
 
-test: build 
+test: build docker
 	go test -v ./...
 
-test_integration: build
+test_integration: build docker
 	go test -v ./integration
 
-docker: build test
+docker: build 
 	docker build -t github-issue-tracker .

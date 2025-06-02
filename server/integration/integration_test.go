@@ -135,4 +135,25 @@ func TestIntegrationWithDocker(t *testing.T) {
 	if len(issues) != 0 {
 		t.Errorf("expected no issues after delete, got %d", len(issues))
 	}
+
+	// 7. POST /api/issues with invalid payload should return 400 Bad Request
+	resp, err = http.Post(baseURL, "application/json", strings.NewReader(`{"bad":"data"}`))
+	if err != nil {
+		t.Fatalf("failed to POST invalid payload: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusBadRequest {
+		t.Errorf("expected 400 Bad Request for invalid payload, got %d", resp.StatusCode)
+	}
+
+	// 8. GET /api/issues/{nonexistent} should return 404 Not Found
+	nonexistentURL := fmt.Sprintf("%s/%s", baseURL, "nonexistent-id")
+	resp, err = http.Get(nonexistentURL)
+	if err != nil {
+		t.Fatalf("failed to GET nonexistent issue: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusNotFound {
+		t.Errorf("expected 404 Not Found for nonexistent issue, got %d", resp.StatusCode)
+	}
 }
