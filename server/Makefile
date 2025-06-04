@@ -11,10 +11,15 @@ generate:
 	@echo "***************************************************************"
 
 test: build docker
-	go test -v ./...
+	go test ./... -v
 
+test_short: build
+	go test ./... -v --short
+
+# go test: run tests, ./... searches pattern, -v: verbose, 
+# -run ^TestIntegration : only test starting with TestIntegration (test name not filename)
 test_integration: build docker
-	go test -v ./integration
+	go test ./... -v -run ^TestIntegration
 
 docker: build 
 	docker build -t github-issue-tracker .

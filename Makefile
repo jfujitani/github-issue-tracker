@@ -11,6 +11,9 @@ generate:
 test: build
 	$(MAKE) -C server test 
 
+test_short: build
+	$(MAKE) -C server test_short
+
 test_integration: build
 	$(MAKE) -C server test_integration 
 
