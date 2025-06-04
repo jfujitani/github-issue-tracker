@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github-issue-tracker/models"
+	"github-issue-tracker/server/models"
 )
 
 type IssueService interface {

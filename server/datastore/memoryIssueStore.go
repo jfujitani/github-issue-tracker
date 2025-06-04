@@ -2,7 +2,7 @@ package datastore
 
 import (
 	"fmt"
-	"github-issue-tracker/models"
+	"github-issue-tracker/server/models"
 	"sync"
 )
 

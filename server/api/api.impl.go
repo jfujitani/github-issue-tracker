@@ -3,8 +3,8 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github-issue-tracker/models"
-	"github-issue-tracker/services"
+	"github-issue-tracker/server/models"
+	"github-issue-tracker/server/services"
 	"net/http"
 )
 

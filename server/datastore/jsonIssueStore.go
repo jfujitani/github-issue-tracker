@@ -3,7 +3,7 @@ package datastore
 import (
 	"encoding/json"
 	"fmt"
-	"github-issue-tracker/models"
+	"github-issue-tracker/server/models"
 	"io"
 	"os"
 	"sync"

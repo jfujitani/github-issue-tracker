@@ -1,21 +1,25 @@
-.PHONY: build test test_integration generate docker
+.PHONY: all build generate test test_short test_integration docker
 
-build: generate 
-	$(MAKE) -C server build
+all: test
+
+build: generate
+	go build -o ./server ./server
 
 generate:
 	mkdir -p server/.build
 	cp ./api/openApi.yaml ./server/.build/openApi.yaml
-	$(MAKE) -C server generate 
+	go generate ./server/...
 
-test: build
-	$(MAKE) -C server test 
+test: build docker
+	go test ./server/... -v
 
 test_short: build
-	$(MAKE) -C server test_short
+	go test ./server/... -v -short
 
-test_integration: build
-	$(MAKE) -C server test_integration 
+# go test: run tests, ./... searches pattern, -v: verbose, 
+# -run ^TestIntegration : only test starting with TestIntegration (test name not filename)
+test_integration: build docker
+	go test ./server/... -v -run ^TestIntegration
 
-docker: build
-	$(MAKE) -C server docker 
+docker: 
+	docker build -t github-issue-tracker ./
