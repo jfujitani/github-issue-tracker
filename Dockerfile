@@ -14,14 +14,14 @@ COPY server ./server/
 
 # Build the Go binary
 WORKDIR /app/server
-RUN go build -o /app/bin/server .
+RUN go build -o /app/server/server .
 
 # Final stage
 FROM alpine:3.19
 
 # Copy the binary from the builder
-COPY --from=builder /app/bin/server /app/bin/server
+COPY --from=builder /app/server/server /app/server/server
 
 EXPOSE 8080
 
-ENTRYPOINT ["./app/bin/server"]
+ENTRYPOINT ["./app/server/server"]
