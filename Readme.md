@@ -5,6 +5,7 @@ flowchart TD
     A[all] --> B[test]
     B --> C[build]
     B --> D[docker]
+    B --> N[go test ./server/...]
     C --> E[generate]
     E --> F[mkdir -p server/.build]
     E --> G[cp ./api/openApi.yaml ./server/.build/openApi.yaml]
