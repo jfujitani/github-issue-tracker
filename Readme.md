@@ -5,17 +5,17 @@ flowchart TD
     A[all] --> B[test]
     B --> C[build]
     B --> D[docker]
-    B --> N[go test ./server/...]
-    C --> E[generate]
-    E --> F[mkdir -p server/.build]
-    E --> G[cp ./api/openApi.yaml ./server/.build/openApi.yaml]
-    E --> H[go generate ./server/...]
-    D --> I[docker build -t github-issue-tracker ./]
-    J[test_short] --> C
-    J --> K[go test ./server/... -v -short]
-    L[test_integration] --> C
-    L --> D
-    L --> M[go test ./server/... -v -run ^TestIntegration]
+    B --> E[go test ./server/... -v]
+    C --> F[generate]
+    F --> G[mkdir -p server/.build]
+    F --> H[cp ./api/openApi.yaml ./server/.build/openApi.yaml]
+    F --> I[go generate ./server/...]
+    D --> J[docker build -t github-issue-tracker ./]
+    K[test_short] --> C
+    K --> L[go test ./server/... -v -short]
+    M[test_integration] --> C
+    M --> D
+    M --> N[go test ./server/... -v -run ^TestIntegration]
 ```
 
 - **all**: Runs `test`
