@@ -1,5 +1,4 @@
 # Giithub-issue-tracker Makefile Diagram
 
-```markdown
-[makefile](./make-diagram.md)
-```
+## Build using [Makefile](./make-diagram.md)
+
