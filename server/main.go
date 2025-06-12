@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github-issue-tracker/server/api"
-	"github-issue-tracker/server/datastore"
-	"github-issue-tracker/server/services"
+	"github-issue-tracker/api"
+	"github-issue-tracker/datastore"
+	"github-issue-tracker/services"
 	"log"
 	"net/http"
 	"os"

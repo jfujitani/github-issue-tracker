@@ -1,7 +1,7 @@
 package datastore
 
 import (
-	"github-issue-tracker/server/models"
+	"github-issue-tracker/models"
 )
 
 type IssueStore interface {
