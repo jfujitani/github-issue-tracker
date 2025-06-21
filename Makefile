@@ -3,7 +3,7 @@
 all: test
 
 build: generate
-	go build -C ./server -o ./server
+	go build -C ./server
 
 generate:
 	mkdir -p server/.build
