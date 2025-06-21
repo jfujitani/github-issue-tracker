@@ -25,4 +25,6 @@ COPY --from=builder /app/server/templates /app/server/templates
 
 EXPOSE 8080
 
-ENTRYPOINT ["./app/server/server"]
+
+WORKDIR /app/server
+ENTRYPOINT ["./server"]
