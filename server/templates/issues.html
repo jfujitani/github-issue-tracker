@@ -1,0 +1,13 @@
+<ul>
+    {{range .}}
+    <li>
+        <strong>ID:</strong> {{.Id}}<br>
+        <strong>Number:</strong> {{.Number}}<br>
+        <strong>Owner:</strong> {{.Owner}}<br>
+        <strong>Repo:</strong> {{.Repo}}<br>
+        <strong>URL:</strong> <a href="{{.Url}}">{{.Url}}</a>
+    </li>
+    {{else}}
+    <li>No issues found.</li>
+    {{end}}
+</ul>

@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"github-issue-tracker/models"
 	"github-issue-tracker/services"
+	"html/template"
 	"net/http"
 )
 
 type Server struct {
-	service services.IssueService
+	service    services.IssueService
+	tmplIssues *template.Template
 }
 
 func NewServer(service services.IssueService) *Server {
-	return &Server{service: service}
+	tmpl := template.Must(template.ParseFiles("templates/issues.html"))
+	return &Server{service: service, tmplIssues: tmpl}
 }
 
 func (s *Server) GetIssues(w http.ResponseWriter, r *http.Request) {
@@ -26,8 +29,17 @@ func (s *Server) GetIssues(w http.ResponseWriter, r *http.Request) {
 	for _, issue := range issues {
 		resp = append(resp, domainToIssueDto(issue))
 	}
-	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(resp)
+
+	if r.Header.Get("HX-Request") == "true" || r.Header.Get("Accept") == "text/html" {
+		w.Header().Set("Content-Type", "text/html")
+		_ = s.tmplIssues.Execute(w, resp)
+		return
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(resp)
+		return
+	}
 }
 
 func (s *Server) GetIssuesId(w http.ResponseWriter, r *http.Request, id string) {
