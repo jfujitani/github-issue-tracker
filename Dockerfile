@@ -21,7 +21,6 @@ FROM alpine:3.19
 
 # Copy the binary from the builder
 COPY --from=builder /app/server/server /app/server/server
-COPY --from=builder /app/server/templates /app/server/templates
 
 EXPOSE 8080
 

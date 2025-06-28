@@ -16,9 +16,7 @@ type Server struct {
 }
 
 func NewServer(service services.IssueService) *Server {
-	tmplIssues := template.Must(template.ParseGlob("templates/*.html"))
-	tmplIssue := template.Must(template.ParseFiles("templates/issue.html"))
-	return &Server{service: service, tmplIssues: tmplIssues, tmplIssue: tmplIssue}
+	return &Server{service: service}
 }
 
 func (s *Server) GetIssues(w http.ResponseWriter, r *http.Request) {
@@ -32,16 +30,9 @@ func (s *Server) GetIssues(w http.ResponseWriter, r *http.Request) {
 		resp = append(resp, domainToIssueDto(issue))
 	}
 
-	if r.Header.Get("HX-Request") == "true" || r.Header.Get("Accept") == "text/html" {
-		w.Header().Set("Content-Type", "text/html")
-		_ = s.tmplIssues.ExecuteTemplate(w, "issues.html", resp)
-		return
-	} else {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_ = json.NewEncoder(w).Encode(resp)
-		return
-	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 func (s *Server) GetIssuesId(w http.ResponseWriter, r *http.Request, id string) {
@@ -51,15 +42,9 @@ func (s *Server) GetIssuesId(w http.ResponseWriter, r *http.Request, id string) 
 		return
 	}
 	resp := domainToIssueDto(*issue)
-	if r.Header.Get("HX-Request") == "true" || r.Header.Get("Accept") == "text/html" {
-		w.Header().Set("Content-Type", "text/html")
-		_ = s.tmplIssue.Execute(w, resp)
-		return
-	} else {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_ = json.NewEncoder(w).Encode(resp)
-	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 func (s *Server) PostIssues(w http.ResponseWriter, r *http.Request) {
