@@ -87,7 +87,6 @@ type MiddlewareFunc func(http.Handler) http.Handler
 
 // GetIssues operation middleware
 func (siw *ServerInterfaceWrapper) GetIssues(w http.ResponseWriter, r *http.Request) {
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetIssues(w, r)
 	}))
@@ -101,7 +100,6 @@ func (siw *ServerInterfaceWrapper) GetIssues(w http.ResponseWriter, r *http.Requ
 
 // PostIssues operation middleware
 func (siw *ServerInterfaceWrapper) PostIssues(w http.ResponseWriter, r *http.Request) {
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PostIssues(w, r)
 	}))
@@ -115,7 +113,6 @@ func (siw *ServerInterfaceWrapper) PostIssues(w http.ResponseWriter, r *http.Req
 
 // GetIssuesStatus operation middleware
 func (siw *ServerInterfaceWrapper) GetIssuesStatus(w http.ResponseWriter, r *http.Request) {
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetIssuesStatus(w, r)
 	}))
@@ -129,7 +126,6 @@ func (siw *ServerInterfaceWrapper) GetIssuesStatus(w http.ResponseWriter, r *htt
 
 // DeleteIssuesId operation middleware
 func (siw *ServerInterfaceWrapper) DeleteIssuesId(w http.ResponseWriter, r *http.Request) {
-
 	var err error
 
 	// ------------- Path parameter "id" -------------
@@ -154,7 +150,6 @@ func (siw *ServerInterfaceWrapper) DeleteIssuesId(w http.ResponseWriter, r *http
 
 // GetIssuesId operation middleware
 func (siw *ServerInterfaceWrapper) GetIssuesId(w http.ResponseWriter, r *http.Request) {
-
 	var err error
 
 	// ------------- Path parameter "id" -------------
@@ -179,7 +174,6 @@ func (siw *ServerInterfaceWrapper) GetIssuesId(w http.ResponseWriter, r *http.Re
 
 // GetIssuesIdStatus operation middleware
 func (siw *ServerInterfaceWrapper) GetIssuesIdStatus(w http.ResponseWriter, r *http.Request) {
-
 	var err error
 
 	// ------------- Path parameter "id" -------------
@@ -338,8 +332,7 @@ type InternalServerErrorJSONResponse ErrorResponse
 
 type NotFoundJSONResponse ErrorResponse
 
-type GetIssuesRequestObject struct {
-}
+type GetIssuesRequestObject struct{}
 
 type GetIssuesResponseObject interface {
 	VisitGetIssuesResponse(w http.ResponseWriter) error
@@ -402,8 +395,7 @@ func (response PostIssues500JSONResponse) VisitPostIssuesResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetIssuesStatusRequestObject struct {
-}
+type GetIssuesStatusRequestObject struct{}
 
 type GetIssuesStatusResponseObject interface {
 	VisitGetIssuesStatusResponse(w http.ResponseWriter) error
@@ -573,8 +565,10 @@ type StrictServerInterface interface {
 	GetIssuesIdStatus(ctx context.Context, request GetIssuesIdStatusRequestObject) (GetIssuesIdStatusResponseObject, error)
 }
 
-type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
-type StrictMiddlewareFunc = strictnethttp.StrictHTTPMiddlewareFunc
+type (
+	StrictHandlerFunc    = strictnethttp.StrictHTTPHandlerFunc
+	StrictMiddlewareFunc = strictnethttp.StrictHTTPMiddlewareFunc
+)
 
 type StrictHTTPServerOptions struct {
 	RequestErrorHandlerFunc  func(w http.ResponseWriter, r *http.Request, err error)

@@ -2,6 +2,8 @@ openapi: 3.0.3
 info:
   title: Issues API
   version: 1.0.0
+servesrs:
+  - url: /api
 paths:
   /issues:
     get:

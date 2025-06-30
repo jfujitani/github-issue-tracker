@@ -18,8 +18,6 @@ func main() {
 
 	mux.Handle("/", http.FileServer(http.Dir("./public")))
 
-	// TODO "/api" should be configured through openApi.yaml
-	// h := api.HandlerFromMux(server, r)
 	api.HandlerFromMuxWithBaseURL(server, mux, "/api")
 
 	handler := stripTrailingSlash(mux)
